@@ -6,20 +6,16 @@
     <title>Bem-vindo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>    
-<header class="header">
-
-    <a href="#" class="logo"> <i class="fas fa-drumstick-bite"></i>Fogo & Brasa</a>
-
-    <nav class="navbar">
-        <a href="home.html" class="active">home</a>
-        <a href="about.html">about</a>
-        <a href="#menu">menu</a>
-        <button onclick="location.href='/logout'" class="navbar">Logout</button>
-       
-        
-    </nav>
-
-</header>
+  <header class="header">
+        <a href="#" class="logo"> <i class="fas fa-drumstick-bite"></i>Fogo & Brasa</a>
+        <nav class="navbar">
+            <a href="{{ url_for('prato.index') }}">Home</a>
+            <a href="#">sobre</a>
+            <a href="{{ url_for('prato.logout') }}">Logout</a>
+            <a href="{{ url_for('prato.index') }}">Menu</a>
+        </nav>
+        <div id="menu" class="fas fa-bars"></div>
+    </header>
 <body>
     <main>
         <div class="heading-title" style="background: url(static/images/sub-header.jpg) no-repeat;">
