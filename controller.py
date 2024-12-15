@@ -1,8 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, json,make_response
 from model import *
+from repository import PratoRepository, FuncionarioRepository
 
 
 prato_controllers = Blueprint("prato", __name__)
+pratoRepository = PratoRepository()
+funcionarioRepository = FuncionarioRepository()
 
 @prato_controllers.before_request
 def before_request():
@@ -12,10 +15,9 @@ def before_request():
 def after_request(response):
     response.set_cookie('visited', 'true')
     return response
-
-
 @prato_controllers.route("/")
 def index():
+    listaPratos = Prato.query.all() 
     username = session.get('username')
     visited = request.cookies.get('visited')
     id = request.args.get('id', default=0, type=int)
@@ -27,15 +29,16 @@ def index():
         else:
             cookie.append(id)
 
-    # Renderizando com lista de pratos e carrinho
+   
     resp = make_response(render_template("index.html", 
                                          listapratos=listaPratos, 
                                          carrinho=cookie))
     resp.set_cookie('carrinho', json.dumps(cookie), max_age=60*60*24)
     return resp
-    return render_template('index.html', username=username, visited=visited)
 
-
+@prato_controllers.route("/sobre")
+def sobre():
+    return render_template("sobre.html"), 500
 
 
 @prato_controllers.route("/login", methods=['GET', 'POST'])
@@ -59,55 +62,66 @@ def welcome():
     if username == "admin":
         message = "Bem-vindo, ADMIN!"
         return redirect(url_for('prato.listar_funcionarios'))
-    else:
+    elif username == "user":
         message = "Bem-vindo, USER!"
         return redirect(url_for('prato.user',username=username, message=message))
+    else:
+     message = "Bem-vindo, FUNCIONÁRIO!"
+    return redirect(url_for('prato.listar_prato',username=username, message=message))
+
 @prato_controllers.route("/user")
 def user():
-    # Obter o carrinho dos cookies
+  
+    listaPratos = Prato.query.all()
     carrinho_ids = json.loads(request.cookies.get('carrinho', '[]'))
-    
-    # Filtrar os pratos que estão no carrinho
+ 
     pratos_no_carrinho = [prato for prato in listaPratos if prato.id in carrinho_ids]
-    
-    # Calcular o preço total
     total_carrinho = sum(prato.preco for prato in pratos_no_carrinho)
     
-    # Renderizar o template com os pratos do carrinho e o total
+
     return render_template("user.html", listaPratos=pratos_no_carrinho, total=total_carrinho)
-# Definindo a lista de funcionários
-funcionarios = [
-    {"id": 1, "nome": "Giovanna", "cargo": "Gerente"},
-    {"id": 2, "nome": "Gaby", "cargo": "Programador"},
-    {"id": 3, "nome": "Rafael", "cargo": "Programador"},
-    {"id": 4, "nome": "João Amorim ", "cargo": "Garçom"}
-]
+
+@prato_controllers.route("/funcionario")
+def listar_prato():
+    prato = pratoRepository.get_all_pratos()
+    return render_template("funcionario.html", prato=prato)
+
+@prato_controllers.route("/funcionario/add_prato", methods=["POST"])
+def add_prato():
+    nome = request.form["nome"]
+    descricao = request.form["descricao"]
+    preco = float(request.form["preco"])
+    imagem = request.form["imagem"]
+    
+    pratoRepository.add_prato(nome, descricao, preco, imagem)
+    flash('Prato adicionado com sucesso!', 'success')
+    return redirect(url_for('prato.index'))
+
+@prato_controllers.route("/funcionario/remove_prato/<int:id>", methods=["POST"])
+def remove_prato(id):
+    pratoRepository.remove_prato(id)
+    flash('Prato removido com sucesso!', 'success')
+    return redirect(url_for('prato.index'))
 
 @prato_controllers.route("/admin")
 def listar_funcionarios():
-    # Rota para exibir a lista de funcionários
+    funcionarios = funcionarioRepository.get_all_funcionarios()
     return render_template("admin.html", funcionarios=funcionarios)
 
 @prato_controllers.route("/admin/funcionarios/adicionar", methods=["POST"])
-def adicionar_funcionario():
-    # Rota para adicionar um funcionário
-    global funcionarios
-    novo_funcionario = {
-        "id": len(funcionarios) + 1,
-        "nome": request.form.get("nome"),
-        "cargo": request.form.get("cargo")
-    }
-    funcionarios.append(novo_funcionario)
-    flash("Funcionário adicionado com sucesso!", "success")
-    return redirect(url_for("prato.listar_funcionarios"))
+def add_funcionario():
+    nome = request.form["nome"]
+    cargo = request.form["cargo"]
+    
+    funcionarioRepository.add_funcionario(nome, cargo)
+    flash('Funcionário adicionado com sucesso!', 'success')
+    return redirect(url_for('prato.listar_funcionarios'))
 
 @prato_controllers.route("/admin/funcionarios/remover/<int:id>", methods=["POST"])
 def remover_funcionario(id):
-    # Rota para remover um funcionário
-    global funcionarios
-    funcionarios = [f for f in funcionarios if f["id"] != id]
-    flash("Funcionário removido com sucesso!", "success")
-    return redirect(url_for("prato.listar_funcionarios"))
+    funcionarioRepository.remove_funcionario(id)
+    flash('Funcionário removido com sucesso!', 'success')
+    return redirect(url_for('prato.listar_funcionarios'))
 
 
 @prato_controllers.route("/logout")
