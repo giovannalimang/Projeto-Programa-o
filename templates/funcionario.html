@@ -23,25 +23,26 @@
 <br>
     <main>
           <section class="booking">
-            <h2>Lista de Funcionários</h2>
+            <h2>Lista de Pratos</h2>
             <table class="employee-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nome</th>
-                        <th>Cargo</th>
+                        <th>Imagem</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for funcionario in funcionarios %}
+                    {% for prato in listapratos %}
                         <tr>
-                            <td>{{ funcionario.id }}</td>
-                            <td>{{ funcionario.nome }}</td>
-                            <td>{{ funcionario.cargo }}</td>
+                            <td>{{ prato.id }}</td>
+                            <td>{{ prato.nome }}</td>
+                            <td>{{ prato.descricao}}</td>
+                            <td>{{ prato.imagem }}</td>
                             <td>
                                 <br>
-                                <form action="{{ url_for('prato.remover_funcionario', id=funcionario.id) }}" method="post" >
+                                <form action="{{ url_for('prato.remove_prato', id=prato.id) }}" method="post" >
                                     <button type="submit">Remover</button>
                                 </form>
                             </td>
@@ -50,22 +51,27 @@
                 </tbody>
             </table>
         </section>
-
         <section>
-            <h2>Adicionar Novo Funcionário</h2>
-            <form action="{{ url_for('prato.add_funcionario') }}" method="post" class="book-form">
+            <h2>Adicionar Novo Prato</h2>
+            <form action="{{ url_for('prato.add_prato') }}" method="post" class="book-form">
                 <div class="flex">
                     <div class="inputBox">
                         <input type="text" name="nome" placeholder="Nome:" required>
                     </div>
                         <div class="inputBox">
-                            <input type="text" name="cargo" placeholder="Cargo:" required>
+                            <input type="text" name="preco" placeholder="Preço:" required>
                         </div>
-                
+                        <div class="flex">
+                            <div class="inputBox">
+                                <input type="text" name="imagem" placeholder="Descrição:" required>
+                            </div>
+                            <div class="flex">
+                                <div class="inputBox">
+                                    <input type="text" name="descricao" placeholder="Imagem:" required>
+                                </div>
                         <input type="submit" value="Adicionar" class="btn">
             </form>
         </section>
-     
     </main>
 </body>
 </html>

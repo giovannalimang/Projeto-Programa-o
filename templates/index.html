@@ -4,27 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fogo & Brasa</title>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    
     <header class="header">
         <a href="#" class="logo"> <i class="fas fa-drumstick-bite"></i>Fogo & Brasa</a>
         <nav class="navbar">
-            <a href="#" class="active">home</a>
-            <a href="#">sobre</a>
+            <a href="#menu" class="active">home</a>
+            <a href="{{ url_for('prato.sobre') }}">Sobre</a>
             <a href="{{ url_for('prato.login') }}">Login</a>
             <a href="{{ url_for('prato.index') }}">Menu</a>
         </nav>
         <div id="menu" class="fas fa-bars"></div>
     </header>
+
+
     <section class="home" id="home">
+
         <div class="content">
             <h3><br> Bem-vindo ao restaurante!</h3>
             <a href="#menu" class="btn"> menu</a>
         </div>
 
     </section>
+
+
     <section class="banner">
 
         <div class="hex">
@@ -64,21 +72,20 @@
         </div>
 
     </section>
-
     <section class="menu">
         <h3 class="heading">Menu</h3>
         <div class="box-container">
             {% for prato in listapratos %}
                 <div class="box">
                     <div class="image">
-                        <!-- Use a imagem dinâmica com a propriedade 'imagem' do prato -->
+                       
                         <img src="{{ url_for('static', filename='images/' + prato.imagem) }}" alt="{{ prato.nome }}">
                         <a href="#" class="fas fa-heart"></a>
                         <a href="#" class="fas fa-eye"></a>
                     </div>
                     <div class="content">
                         <h3>{{ prato.nome }}</h3>
-                        <p>{{prato.descr}}.</p>
+                        <p>{{ prato.descricao }}</p>
                         <div class="price">R$ {{ prato.preco }}</div>
                         <div class="stars">
                             <i class="fas fa-star"></i>
@@ -97,19 +104,19 @@
             {% endfor %}
         </div>
     </section>
-    
+
     <section class="footer">
 
         <div class="box-container">
 
             <div class="box">
                 <h3>links</h3>
-                <a href="#"> <i class="fas fa-arrow-right"></i> home</a>
-                <a href="#"> <i class="fas fa-arrow-right"></i> about</a>
-                <a href="#"> <i class="fas fa-arrow-right"></i> menu</a>
-             
+                <a href="#menu" class="active">home</a>
+                <a href="sobre.html">sobre</a>
+                <a href="{{ url_for('prato.login') }}">Login</a>
+                <a href="{{ url_for('prato.index') }}">Menu</a>
             </div>
-
+    
             <div class="box">
                 <h3>Siga nas redes</h3>
                 <a href="#"> <i class="fab fa-facebook-f"></i> facebook</a>
@@ -131,9 +138,5 @@
         </div>
 
     </section>
-
-    <section class="credit">@2024|all rights reserved</section>
-
-
 </body>
 </html>
